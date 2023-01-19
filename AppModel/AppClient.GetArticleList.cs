@@ -31,6 +31,7 @@ public partial record AppClient {
 				PublicationTime = row.GetUtcDateTime("publication_time"),
 				ViewCount = row.GetLong("view_count"),
 				Hubs = row.GetTupleArray("hubs", Hub.FromIdNameHandleSequentialRow),
+				IsBookmarked = row.GetBool("is_bookmarked")
 			},
 			@"
 SELECT
@@ -89,7 +90,11 @@ SELECT
 			article_comment ac
 		WHERE
 			ac.article_id = a.id
-	) AS comment_count
+	) AS comment_count,
+	(
+		SELECT EXISTS(SELECT 1 FROM article_bookmark as ab WHERE ab.article_id = a.id
+		AND ab.user_id = :current_user_id)
+	) AS is_bookmarked
 FROM
 	article a
 WHERE

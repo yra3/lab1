@@ -14,5 +14,6 @@ public record ArticleList {
 		public DateTime PublicationTime { get; init; }
 		public long ViewCount { get; init; }
 		public IReadOnlyList<Hub> Hubs { get; init; } = Array.Empty<Hub>();
+		public bool IsBookmarked { get; init; }
 	}
 }

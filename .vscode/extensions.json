@@ -2,7 +2,6 @@
 	"recommendations": [
 		"adpyke.vscode-sql-formatter",
 		"aliasadidev.nugetpackagemanagergui",
-		"editorconfig.editorconfig",
 		"fernandoescolar.vscode-solution-explorer",
 		"formulahendry.dotnet",
 		"hediet.tasks-statusbar",

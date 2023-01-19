@@ -13,6 +13,8 @@ public record Article {
 	public IReadOnlyList<Hub> Hubs { get; init; } = Array.Empty<Hub>();
 	public IReadOnlyList<Poll> Polls { get; init; } = Array.Empty<Poll>();
 	public IReadOnlyList<Comment> Comments { get; init; } = Array.Empty<Comment>();
+	public static readonly Article Empty = new();
+	public bool IsBookmarked { get; init; }
 	public record Poll {
 		public Guid Id { get; init; }
 		public string Title { get; init; } = "";

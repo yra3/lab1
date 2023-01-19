@@ -117,6 +117,18 @@ ORDER BY
 			}
 		}
 		await InsertMultiple(cursor, "article_comment", comments);
+		var bookmarks = new List<QueryParameters>();
+		foreach (var article in rg.NextArrayElements(articles, 0.1)) {
+			foreach (var user in rg.NextArrayElements(users, 0.1)) {
+				var bookmark = new QueryParameters() {
+					{ "user_id", user.GetValue("id") },
+					{ "article_id", article.GetValue("id") },
+					{ "creation_time", rg.NextUtcDateTime() }
+				};
+				bookmarks.Add(bookmark);
+			}
+		}
+		await InsertMultiple(cursor, "article_bookmark", bookmarks);
 		await cursor.Commit();
 	}
 	public static async Task<int> InsertMultiple(DbCursor cursor, string tableName, IEnumerable<QueryParameters> multipleParameters, string conflictNames = "") {

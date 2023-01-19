@@ -14,9 +14,16 @@ public partial record AppClient {
 		if (article == null) {
 			return null;
 		}
+		if (CurrentUserId == null) {
+			return article with {
+				Polls = await GetArticlePolls(cursor, articleId),
+				Comments = await GetArticleComments(cursor, articleId),
+			};
+		}
 		return article with {
 			Polls = await GetArticlePolls(cursor, articleId),
-			Comments = await GetArticleComments(cursor, articleId)
+			Comments = await GetArticleComments(cursor, articleId),
+			IsBookmarked = await IsArticleMarked(cursor, articleId, CurrentUserId),
 		};
 	}
 	async Task<Article?> GetArticleById(DbCursor cursor, Guid articleId) {
@@ -214,4 +221,22 @@ WHERE
 		}
 		return GetComments(Guid.Empty);
 	}
+
+	static async Task<bool> IsArticleMarked(DbCursor cursor, Guid articleId, Guid? userId) {
+		return await cursor.QueryFirst(
+			row => {
+				return row != null && row.GetBool("exists");
+			},
+			@"SELECT * FROM (
+				SELECT EXISTS(
+					SELECT 1 FROM article_bookmark as ab
+					 WHERE ab.article_id = :article_id
+					 AND ab.user_id = :current_user_id)) as ex",
+			new() {
+				{"article_id", articleId },
+				{"current_user_id", userId}
+			}
+		);
+	}
 }
+

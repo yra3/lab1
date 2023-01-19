@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TestHelpers;
+
 namespace AppTestScenarios;
 public static class AppScenarios {
 	public static async Task CheckGetArticleList(Db db) {
@@ -104,5 +105,27 @@ public static class AppScenarios {
 			Check.IsTrue(Serializer.ToJson(await anonymousClient.GetUserCard(currentUserId)) == userCardJson);
 		}
 		Logger.Log($"{nameof(AppScenarios)}.{nameof(CheckAddNewArticle)}: ok");
+	}
+
+	public static async Task CheckAddBookmarkArticle(Db db) {
+		var client = new AppClient(db) {
+			CurrentUserId = Guid.Parse("de3136ac-4152-926a-fa65-64e75ac4f572"),
+		};
+		var articleId = Guid.Parse("7fe47618-0887-fa7d-b7aa-0f8f9eb44a63");
+		Check.IsTrue(!await client.AddArticleBookmark(articleId));
+		await client.RemoveArticleBookmark(articleId);
+		Check.IsTrue(await client.AddArticleBookmark(articleId));
+		Logger.Log($"{nameof(AppScenarios)}.{nameof(CheckAddBookmarkArticle)}: ok");
+	}
+
+	public static async Task CheckRemoveArticleBookmark(Db db) {
+		var client = new AppClient(db) {
+			CurrentUserId = Guid.Parse("de3136ac-4152-926a-fa65-64e75ac4f572"),
+		};
+		var articleId = Guid.Parse("bd490100-d266-bb7a-d578-61035fbab6ad");
+		Check.IsTrue(!await client.RemoveArticleBookmark(articleId));
+		await client.AddArticleBookmark(articleId);
+		Check.IsTrue(await client.RemoveArticleBookmark(articleId));
+		Logger.Log($"{nameof(AppScenarios)}.{nameof(CheckRemoveArticleBookmark)}: ok");
 	}
 }
